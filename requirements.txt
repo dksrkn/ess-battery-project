@@ -1,5 +1,17 @@
-mat73
-h5py
+# Data Manipulation & Loading
+numpy
 pandas
+mat73
 scipy
+
+# Visualization
 matplotlib
+seaborn
+
+# Machine Learning
+scikit-learn
+xgboost
+lightgbm
+
+# Jupyter Environment
+ipykernel
