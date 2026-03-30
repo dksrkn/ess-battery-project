@@ -1,2 +1,7 @@
 .venv
+
 data/
+
+notebooks/*
+
+!notebooks/day1_eda.ipynb
