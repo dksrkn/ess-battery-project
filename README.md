@@ -1,7 +1,5 @@
 # ESS Battery Cycle Life Prediction - EDA
-본 프로젝트는 MIT-Stanford Battery Dataset의 초기 100 cycle 기반 파생 피처로
-
-배터리의 총 수명(cycle_life)을 예측하는 모델을 구축합니다.
+본 프로젝트는 MIT-Stanford Battery Dataset의 초기 100 cycle 기반 파생 피처로 배터리의 총 수명(cycle_life)을 예측하는 모델을 구축합니다.
 
 ## 프로젝트 개요
 - 데이터셋 : MIT-Stanford Battery Dataset (Severson et al., Nature Energy 2019)
