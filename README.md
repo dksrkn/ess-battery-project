@@ -178,7 +178,7 @@ EDA 결과를 기반으로 다음 전략을 적용:
 * 모델보다 feature 안정성이 더 중요
 * batch 간 차이를 고려한 feature 설계 필요
 
----
+-----
 
 ## 모델링 결과
 사용 feature : delta_log_var, QD_cv, effective_C, temp_ir_interaction
@@ -205,7 +205,8 @@ EDA 결과를 기반으로 다음 전략을 적용:
 | Gap (Valid-Test)         | +28.15   | (+) : 배치간 일반화 저하 의심 |
 | Gap (Target-Test)        | +26.67   | Target : 원논문 9.1%   |
 
-사용 feature : 
+-----
+사용 feature : "delta_log_var", "delta_max", "QD_cv", "effective_C", "temp_ir_interaction"
 
 3. LightGBM
    
@@ -217,8 +218,6 @@ EDA 결과를 기반으로 다음 전략을 적용:
 | Gap (Train-Valid)        | -4.66    | 과적합 없음              |
 | Gap (Valid-Test)         | +18.71   | (+) : 배치간 일반화 저하 의심 |
 | Gap (Target-Test)        | +18.55   | Target : 원논문 9.1%   |
-
-사용 feature : ["delta_log_var", "delta_max", "QD_cv", "effective_C", "temp_ir_interaction"]
 
 ## 결과 해석
 1. 성능 해석
