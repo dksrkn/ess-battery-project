@@ -18,6 +18,7 @@
 │   │   ├── batch2.ipynb
 │   │   └── batch3.ipynb
 │   └── modeling/
+│       └── day2_eda.ipynb
 │       └── day2_modeling_v1.ipynb
 │       └── day2_modeling_v2.ipynb
 ├── requirements.txt
