@@ -1,99 +1,180 @@
-# ESS 배터리 수명 예측 
-목적 작성 
+# 🔋 ESS Battery Cycle Life Prediction - EDA
 
+## 📌 프로젝트 개요
 
-## 프로젝트 개요
 - 데이터셋 : MIT-Stanford Battery Dataset (Severson et al., Nature Energy 2019)
 - 학습 데이터 : Batch 1 (2017-05-12)
 - 평가 데이터 : Batch 2 (2018-02-20)
-- 태스크 : Regression (Cycle Life 예측) / Classification (장단수명 분류)  ← 택1 
+- 태스크 : Regression (Cycle Life 예측)
 
+---
 
-## 파일 구조 (sample) 
+## 🎯 문제 정의
+
+* **입력 데이터**: 초기 100 사이클 (cycle ≤ 100)
+* **타겟 변수**: `cycle_life`
+* **목표**: 초기 열화 패턴을 기반으로 미래 수명 예측
+
+---
+
+## 🔍 주요 EDA 결과
+
+### 1. Cycle Life 분포
+
+* 배터리 수명은 셀마다 큰 편차 존재
+* Batch 간 분포 차이 존재 (특히 Batch3)
+* 일부 극단값(outlier) 존재
+
+👉 **Insight**
+
+* 단순 평균 기반 모델링 어려움
+* robust한 feature 필요
+
+---
+
+### 2. 충전 조건(C-rate)과 수명 관계
+
+* C-rate 증가 → cycle life 감소 경향
+* Batch1에서는 강한 음의 상관관계
+* Batch2에서는 관계 약화
+
+👉 **Insight**
+
+* 충전 속도는 중요한 feature
+* 하지만 batch마다 영향 다름
+
+---
+
+### 3. QD(용량) 감소 패턴
+
+* 일반적으로 cycle 증가 → QD 감소
+* 일부 셀에서 **비정상적인 증가(spike)** 발생
+
+👉 **문제**
+
+* 센서 노이즈 또는 측정 오류
+* ΔQ feature 계산 시 왜곡 발생
+
+👉 **처리 방향**
+
+* smoothing / monotonic 보정 필요
+
+---
+
+### 4. 열화 곡선 분석
+
+* 초기에는 완만한 감소
+* 이후 특정 시점에서 급격한 감소 (knee point)
+
+👉 **Insight**
+
+* 초기 slope가 전체 수명과 밀접한 관계
+* `slope_early` 중요 feature
+
+---
+
+### 5. ΔQ(V) 분석
+
+ΔQ(V) = Q(100) - Q(10)
+
+* 초기 열화 패턴을 전압 기준으로 표현
+* 다양한 통계 feature 생성
+
+#### 주요 feature
+
+* `delta_log_var`: 열화 변동성 (논문 핵심)
+* `delta_mean`: 평균 열화량
+* `delta_std`: 열화 불균일성
+
+#### 문제 발견
+
+* `delta_max`, `delta_area` 등은 batch 간 값 차이 매우 큼
+* 전압 정렬 차이로 인해 feature 불안정
+
+👉 **Insight**
+
+* ΔQ feature는 강력하지만 민감함
+* 일부 feature 제거 필요
+
+---
+
+### 6. Feature 분포 비교 (Batch1 vs Batch2)
+
+| Feature       | 특징        |
+| ------------- | --------- |
+| delta_max     | 최대 40배 차이 |
+| QD_cv         | 약 4배 차이   |
+| delta_log_var | 상대적으로 안정  |
+| effective_C   | 비교적 안정    |
+
+👉 **Insight**
+
+* batch 간 distribution shift 존재
+* 일반화 성능 저하 원인
+
+---
+
+### 7. 다중공선성 분석
+
+* ΔQ 계열 feature 간 강한 상관관계 존재
+* VIF 매우 높음 (inf 수준)
+
+👉 **문제**
+
+* 모델 계수 불안정
+* 일반화 성능 저하
+
+👉 **해결**
+
+* delta feature 축소 (대표 feature만 사용)
+
+---
+
+## ⚠️ 주요 문제점 정리
+
+1. **Batch 간 분포 차이 (distribution shift)**
+2. **QD 이상치 (비정상 증가)**
+3. **ΔQ feature의 불안정성**
+4. **다중공선성 (특히 delta 계열)**
+
+---
+
+## ✅ Feature Engineering 방향
+
+EDA 결과를 기반으로 다음 전략을 적용:
+
+### 파생 변수 생성
+
+```text
+- QD_cv
+- effective_C
+- temp_ir_interaction
+- delta_log_var 
 ```
-├── data/
-│   └── README.md          
-├── notebooks/
-│   ├── 01_EDA.ipynb
-│   ├── 02_feature_engineering.ipynb
-│   └── 03_modeling.ipynb
-├── src/
-│   ├── preprocess.py
-│   ├── features.py
-│   └── train.py
-├── results/
-│   └── model_performance.csv
-├── requirements.txt
-└── README.md
-```
 
+---
 
-## 환경 설정 (sample) 
-```bash
-git clone https://github.com/팀명/ess-battery-project
-cd ess-battery-project
-pip install -r requirements.txt
-```
+## 💡 핵심 인사이트
 
+* 초기 열화 패턴이 전체 수명을 결정
+* ΔQ(V)는 강력하지만 매우 민감한 feature
+* 모델보다 feature 안정성이 더 중요
+* batch 간 차이를 고려한 feature 설계 필요
 
-## EDA
+---
 
-- Cycle Life 분포
-  - 분포 형태 및 장단수명 비율 요약 : 전체 셀(Batch 1~3)의 수명은 150~2,300사이클로 넓은 범위에 걸쳐 오른쪽으로 꼬리가 긴(right-skewed) 분포를 보임. 장수명(>1,000사이클) 셀은 전체의 약 20%, 단수명(<500사이클) 셀은 약 40%를 차지하며 단수명 비중이 높음
-  - 핵심 발견 : 배터리 수명 분포는 정규분포가 아닌 비대칭 분포이므로, 회귀 모델링 시 로그 변환(log transform)을 고려해야 하며, 단순 평균보다 중앙값이 대표값으로 더 적합함
+## 🔍 모델링 결과
+1. ElasticNet + Log
+    - Train (Batch 1 CV) : MAPE 9.46
+    - Valid (Batch 1 Hold-out) : MAPE 8.45
+    - Test (Batch 2) : 30.46
 
-- 열화 곡선 분석
-  - 장수명 vs 단수명 셀의 열화 속도 차이 : 단수명 셀은 초기 50~100사이클 이내부터 방전 용량(Qd)이 빠르게 감소하는 반면, 장수명 셀은 상대적으로 완만한 선형적 열화를 보임
-  - Knee point 존재 여부 및 발생 시점 : 단수명 셀에서 Knee point(급격한 열화 가속 시점)가 뚜렷하게 관찰되며, 대체로 SOH 90% 근방에서 발생. 장수명 셀은 Knee point가 늦게 나타나거나 관측 범위 내에서 나타나지 않음
-  - 핵심 발견 : 초기 100사이클의 열화 기울기만으로도 장단수명 셀을 구분할 수 있는 신호가 존재하며, 이는 조기 수명 예측의 핵심 근거가 됨
+2. Log Regression + Ridge
+    - Train 
+    - Valid 
+    - Test 
 
-- ΔQ(V) 곡선 분석
-  - Cycle 100 - Cycle 10 차이 곡선 형태 : ΔQ(V) = Q(V, cycle 100) - Q(V, cycle 10)으로 계산하며, 전압 구간 2.0~3.6V에 걸쳐 음의 방향으로 면적이 형성됨. 단수명 셀일수록 곡선의 최솟값이 더 크게 음의 방향으로 이동하고 분산이 큰 형태를 보임
-  - 장단수명 셀 간 ΔQ 형태 비교 : 장수명 셀은 ΔQ(V) 곡선의 분산(variance)이 작고 최솟값이 0에 가까운 반면, 단수명 셀은 분산과 최솟값의 절댓값이 모두 크게 나타남
-  - 핵심 발견 : ΔQ(V) 곡선의 분산(var), 최솟값(min), 평균(mean)이 cycle_life와 강한 상관관계를 가지며, 원논문의 핵심 피처로 활용됨. 특히 분산(variance of ΔQ)은 단독으로도 수명과 높은 음의 상관관계(-0.87 수준)를 보임
-
-- 충전 속도(C-rate)와 수명의 관계
-  - 충전 프로토콜별 평균 수명 비교 결과 : 고속 충전(4C 이상) 프로토콜을 사용한 셀은 저속 충전 셀 대비 평균 수명이 짧은 경향이 있으나, 동일 C-rate 내에서도 수명 편차가 크게 나타남
-  - 핵심 발견 : C-rate 단독으로는 수명을 결정짓는 지배적 요인이 아니며, 초기 사이클의 ΔQ(V) 패턴이 C-rate 효과를 내포하는 더 강력한 피처임. 따라서 charging_policy는 보조 피처로 활용하고 ΔQ 기반 피처를 우선시하는 전략이 적합함
-
-- 상관관계 분석 (초기 사이클 피처 vs Cycle Life)
-  - 초기 사이클의 QD(방전 용량), IR(내부 저항), Tavg(평균 온도) 등 Summary 피처와 cycle_life 간 상관계수를 확인한 결과, var(ΔQ) > min(ΔQ) > QD_mean 순으로 높은 상관관계를 보임
-  - 핵심 발견 : var(ΔQ)와 min(ΔQ)는 서로 높은 다중공선성(multicollinearity)을 가지므로, 두 피처를 동시에 투입할 경우 VIF 확인 또는 PCA 등의 차원 축소 고려가 필요함
-
-## Modeling 
-
-### 피처 엔지니어링 전략
-EDA 결과를 바탕으로 선택한 피처와 그 근거를 기술
-
-
-### 모델 선택 및 근거
-- 후보 모델 : 
-- 최종 모델 :
-- 선택 이유 :
-
-
-## 성능 결과
-Format에 맞춰 작성
-
-
-## 오류 분석
-- 모델이 가장 크게 틀린 셀의 공통점
-- 원인 가설 및 개선 방향
-
-
-## ESS 도메인 해석
-분석 결과를 실제 ESS 운영 관점에서 해석
-
-- 이 모델을 실제 BESS에 적용한다면 어떤 의사결정에 활용 가능한가?
-- 어떤 한계가 있으며, 실 배포를 위해 추가로 필요한 것은 무엇인가?
-
-
-## 참고문헌
-- Severson et al. (2019). Data-driven prediction of battery cycle life before capacity degradation. *Nature Energy*, 4, 383–391.
-
-
-## 팀 구성
-- 김한규 : EDA, 피처 엔지니어링, 모델 개발, 성능 평가
-- 박지원 : EDA, 피처 엔지니어링, 모델 개발, 성능 평가
-- 배수정 : EDA, 피처 엔지니어링, 모델 개발, 성능 평가
-- 안가은 : EDA, 피처 엔지니어링, 모델 개발, 성능 평가
+3. LightGBM
+    - Train (Batch 1 CV) : MAPE 13.6
+    - Valid (Batch 1 Hold-out) : MAPE 8.94
+    - Test (Batch 2) : 27.6529
