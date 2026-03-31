@@ -205,19 +205,16 @@ EDA 결과를 기반으로 다음 전략을 적용:
 | Gap (Valid-Test)         | +28.15   | (+) : 배치간 일반화 저하 의심 |
 | Gap (Target-Test)        | +26.67   | Target : 원논문 9.1%   |
 
------
-### 사용 feature : delta_log_var, delta_max, QD_cv, effective_C, temp_ir_interaction
-
 3. LightGBM
    
 | 구분                       | MAPE (%) | 비고                  |
 | ------------------------ | -------- | ------------------- |
-| Train (Batch 1 CV)       | 13.60    |                     |
-| Valid (Batch 1 Hold-out) | 8.94     |                     |
-| Test (Batch 2)           | 27.65    |                     |
-| Gap (Train-Valid)        | -4.66    | 과적합 없음              |
-| Gap (Valid-Test)         | +18.71   | (+) : 배치간 일반화 저하 의심 |
-| Gap (Target-Test)        | +18.55   | Target : 원논문 9.1%   |
+| Train (Batch 1 CV)       | 11.8     |                     |
+| Valid (Batch 1 Hold-out) | 8.70     |                     |
+| Test (Batch 2)           | 26.40    |                     |
+| Gap (Train-Valid)        | -3.098    | 과적합 없음              |
+| Gap (Valid-Test)         | +17.704   | (+) : 배치간 일반화 저하 의심 |
+| Gap (Target-Test)        | +17.307   | Target : 원논문 9.1%   |
 
 ## 결과 해석
 1. 성능 해석
@@ -232,7 +229,8 @@ EDA 결과를 기반으로 다음 전략을 적용:
    - Batch 2,3에서 QD 값이 비정상적으로 증가하는 이상치로 인해 오차 증가
    - 다중공선성으로 변수 선택의 제한
    - 제한된 데이터 수로 인해 일반화 성능 저하
-4. lightGBM
+4. lightGBM 선정 이유
+   - Batch 2 test MAPE이 26.4로 가장 작음을 확인
    - LightGBM은 비선형 패턴 반영 가능
    - 이상치 및 노이즈에 강건
    - 작은 데이터에서도 안정적 성능
