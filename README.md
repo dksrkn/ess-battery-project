@@ -19,8 +19,8 @@
 │   │   └── batch3.ipynb
 │   └── modeling/
 │       └── day2_eda.ipynb
-│       └── day2_modeling_v1.ipynb
-│       └── day2_modeling_v2.ipynb
+│       └── day2_modeling_v1.ipynb 
+│       └── day2_modeling_v2.ipynb # 선정 모델
 ├── requirements.txt
 └── README.md
 ```
