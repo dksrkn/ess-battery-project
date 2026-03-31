@@ -1,27 +1,15 @@
 # 🔋 ESS Battery Cycle Life Prediction - EDA
+MIT-Stanford Battery Dataset의 초기 100 cycle 기반 파생 피처로 배터리의 총 수명(cycle_life)을 예측하는 모델을 구축합니다.
 
-## 📌 프로젝트 개요
-
+## 프로젝트 개요
 - 데이터셋 : MIT-Stanford Battery Dataset (Severson et al., Nature Energy 2019)
 - 학습 데이터 : Batch 1 (2017-05-12)
 - 평가 데이터 : Batch 2 (2018-02-20)
 - 태스크 : Regression (Cycle Life 예측)
 
 ---
-
-## 🎯 문제 정의
-
-* **입력 데이터**: 초기 100 사이클 (cycle ≤ 100)
-* **타겟 변수**: `cycle_life`
-* **목표**: 초기 열화 패턴을 기반으로 미래 수명 예측
-
----
-
 ## 파일 구조
-├── data/
-│   └── processed/
-│       ├── batch1_model_df.csv
-│       └── batch2_model_df.csv
+```bash
 ├── notebooks/
 │   ├── eda_v1/
 │   │   └── day1_eda.ipynb
@@ -30,7 +18,7 @@
 │   │   ├── batch2.ipynb
 │   │   └── batch3.ipynb
 │   └── modeling/
-│       └── modeling.ipynb
+│       └── day2.ipynb
 ├── requirements.txt
 └── README.md
 
@@ -44,16 +32,15 @@ source .venv/bin/activate
 
 pip install -r requirements.txt
 
-## 🔍 주요 EDA 결과
+## 주요 EDA 결과
 
 ### 1. Cycle Life 분포
 
-* 배터리 수명은 셀마다 큰 편차 존재
-* Batch 간 분포 차이 존재 (특히 Batch3)
+* 배터리 수명은 셀마다 편차 존재
+* Batch 간 분포 차이 존재
 * 일부 극단값(outlier) 존재
 
-👉 **Insight**
-
+**Insight**
 * 단순 평균 기반 모델링 어려움
 * robust한 feature 필요
 
@@ -65,8 +52,7 @@ pip install -r requirements.txt
 * Batch1에서는 강한 음의 상관관계
 * Batch2에서는 관계 약화
 
-👉 **Insight**
-
+**Insight**
 * 충전 속도는 중요한 feature
 * 하지만 batch마다 영향 다름
 
@@ -77,13 +63,11 @@ pip install -r requirements.txt
 * 일반적으로 cycle 증가 → QD 감소
 * 일부 셀에서 **비정상적인 증가(spike)** 발생
 
-👉 **문제**
-
+**문제**
 * 센서 노이즈 또는 측정 오류
 * ΔQ feature 계산 시 왜곡 발생
 
-👉 **처리 방향**
-
+**처리 방향**
 * smoothing / monotonic 보정 필요
 
 ---
@@ -93,7 +77,7 @@ pip install -r requirements.txt
 * 초기에는 완만한 감소
 * 이후 특정 시점에서 급격한 감소 (knee point)
 
-👉 **Insight**
+**Insight**
 
 * 초기 slope가 전체 수명과 밀접한 관계
 * `slope_early` 중요 feature
@@ -118,7 +102,7 @@ pip install -r requirements.txt
 * `delta_max`, `delta_area` 등은 batch 간 값 차이 매우 큼
 * 전압 정렬 차이로 인해 feature 불안정
 
-👉 **Insight**
+**Insight**
 
 * ΔQ feature는 강력하지만 민감함
 * 일부 feature 제거 필요
@@ -134,7 +118,7 @@ pip install -r requirements.txt
 | delta_log_var | 상대적으로 안정  |
 | effective_C   | 비교적 안정    |
 
-👉 **Insight**
+**Insight**
 
 * batch 간 distribution shift 존재
 * 일반화 성능 저하 원인
@@ -146,18 +130,18 @@ pip install -r requirements.txt
 * ΔQ 계열 feature 간 강한 상관관계 존재
 * VIF 매우 높음 (inf 수준)
 
-👉 **문제**
+**문제**
 
 * 모델 계수 불안정
 * 일반화 성능 저하
 
-👉 **해결**
+**해결**
 
 * delta feature 축소 (대표 feature만 사용)
 
 ---
 
-## ⚠️ 주요 문제점 정리
+## 주요 문제점 정리
 
 1. **Batch 간 분포 차이 (distribution shift)**
 2. **QD 이상치 (비정상 증가)**
@@ -166,7 +150,7 @@ pip install -r requirements.txt
 
 ---
 
-## ✅ Feature Engineering 방향
+## Feature Engineering 방향
 
 EDA 결과를 기반으로 다음 전략을 적용:
 
@@ -181,7 +165,7 @@ EDA 결과를 기반으로 다음 전략을 적용:
 
 ---
 
-## 💡 핵심 인사이트
+## 핵심 인사이트
 
 * 초기 열화 패턴이 전체 수명을 결정
 * ΔQ(V)는 강력하지만 매우 민감한 feature
@@ -204,9 +188,16 @@ EDA 결과를 기반으로 다음 전략을 적용:
 
 
 2. Log Regression + Ridge
-    - Train 
-    - Valid 
-    - Test 
+
+| 구분                       | MAPE (%) | 비고                  |
+| ------------------------ | -------- | ------------------- |
+| Train (Batch 1 CV)       | 9.42     |                     |
+| Valid (Batch 1 Hold-out) | 7.61     |                     |
+| Test (Batch 2)           | 35.77    |                     |
+| Gap (Train-Valid)        | -1.80    | 과적합 없음              |
+| Gap (Valid-Test)         | +28.15   | (+) : 배치간 일반화 저하 의심 |
+| Gap (Target-Test)        | +26.67   | Target : 원논문 9.1%   |
+
 
 3. LightGBM
    
@@ -218,6 +209,7 @@ EDA 결과를 기반으로 다음 전략을 적용:
 | Gap (Train-Valid)        | -4.66    | 과적합 없음              |
 | Gap (Valid-Test)         | +18.71   | (+) : 배치간 일반화 저하 의심 |
 | Gap (Target-Test)        | +18.55   | Target : 원논문 9.1%   |
+
 
 ## 팀 구성
 - 김한규 : EDA, 피처 엔지니어링, 모델 개발, 성능 평가
