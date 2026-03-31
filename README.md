@@ -17,6 +17,32 @@
 
 ---
 
+## 파일 구조
+├── data/
+│   └── processed/
+│       ├── batch1_model_df.csv
+│       └── batch2_model_df.csv
+├── notebooks/
+│   ├── eda_v1/
+│   │   └── day1_eda.ipynb
+│   ├── eda_v2/
+│   │   ├── batch1.ipynb
+│   │   ├── batch2.ipynb
+│   │   └── batch3.ipynb
+│   └── modeling/
+│       └── modeling.ipynb
+├── requirements.txt
+└── README.md
+
+## 환경 설정
+git clone https://github.com/dksrkn/ess-battery-project.git
+cd ess-battery-project
+
+python3 -m venv .venv
+source .venv/bin/activate
+
+pip install -r requirements.txt
+
 ## 🔍 주요 EDA 결과
 
 ### 1. Cycle Life 분포
