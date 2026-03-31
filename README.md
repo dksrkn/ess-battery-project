@@ -218,6 +218,8 @@ EDA 결과를 기반으로 다음 전략을 적용:
 | Gap (Valid-Test)         | +18.71   | (+) : 배치간 일반화 저하 의심 |
 | Gap (Target-Test)        | +18.55   | Target : 원논문 9.1%   |
 
+사용 feature : ["delta_log_var", "delta_max", "QD_cv", "effective_C", "temp_ir_interaction"]
+
 ## 결과 해석
 1. 성능 해석
    - Train과 Valid 성능 차이가 크지 않아 과적합은 관찰되지 않음
