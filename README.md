@@ -181,7 +181,7 @@ EDA 결과를 기반으로 다음 전략을 적용:
 -----
 
 ## 모델링 결과
-사용 feature : delta_log_var, QD_cv, effective_C, temp_ir_interaction
+# 사용 feature : delta_log_var, QD_cv, effective_C, temp_ir_interaction
 
 1. ElasticNet + Log
    
@@ -206,7 +206,7 @@ EDA 결과를 기반으로 다음 전략을 적용:
 | Gap (Target-Test)        | +26.67   | Target : 원논문 9.1%   |
 
 -----
-사용 feature : "delta_log_var", "delta_max", "QD_cv", "effective_C", "temp_ir_interaction"
+# 사용 feature : "delta_log_var", "delta_max", "QD_cv", "effective_C", "temp_ir_interaction"
 
 3. LightGBM
    
