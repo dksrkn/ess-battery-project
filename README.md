@@ -18,7 +18,8 @@
 │   │   ├── batch2.ipynb
 │   │   └── batch3.ipynb
 │   └── modeling/
-│       └── day2.ipynb
+│       └── day2_modeling_v1.ipynb
+│       └── day2_modeling_v2.ipynb
 ├── requirements.txt
 └── README.md
 ```
