@@ -15,4 +15,5 @@ notebooks/eda_v2/*
 !notebooks/eda_v2/batch3.ipynb
 
 notebooks/modeling/*
-!notebooks/modeling/modeling.ipynb
+!notebooks/modeling/day2_modeling_v1.ipynb
+!notebooks/modeling/day2_modeling_v2.ipynb

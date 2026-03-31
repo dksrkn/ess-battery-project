@@ -12,8 +12,7 @@ seaborn
 scikit-learn
 xgboost
 lightgbm
+optuna
 
 # Jupyter Environment
 ipykernel
-
-lightgbm
