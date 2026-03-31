@@ -4,6 +4,7 @@ data/
 notebooks/*
 !notebooks/eda_v1/
 !notebooks/eda_v2/
+!notebooks/modeling/
 
 notebooks/eda_v1/*
 !notebooks/eda_v1/day1_eda.ipynb
@@ -12,3 +13,6 @@ notebooks/eda_v2/*
 !notebooks/eda_v2/batch1.ipynb
 !notebooks/eda_v2/batch2.ipynb
 !notebooks/eda_v2/batch3.ipynb
+
+notebooks/modeling/*
+!notebooks/modeling/modeling.ipynb

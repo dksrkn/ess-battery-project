@@ -15,3 +15,5 @@ lightgbm
 
 # Jupyter Environment
 ipykernel
+
+lightgbm
