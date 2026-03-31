@@ -165,9 +165,16 @@ EDA 결과를 기반으로 다음 전략을 적용:
 
 ## 🔍 모델링 결과
 1. ElasticNet + Log
-    - Train (Batch 1 CV) : MAPE 9.46
-    - Valid (Batch 1 Hold-out) : MAPE 8.45
-    - Test (Batch 2) : 30.46
+   
+| 구분                       | MAPE (%) | 비고                  |
+| ------------------------ | -------- | ------------------- |
+| Train (Batch 1 CV)       | 9.46     |                     |
+| Valid (Batch 1 Hold-out) | 8.45     |                     |
+| Test (Batch 2)           | 30.46    |                     |
+| Gap (Train-Valid)        | -1.01    | 과적합 없음              |
+| Gap (Valid-Test)         | +22.01   | (+) : 배치간 일반화 저하 의심 |
+| Gap (Target-Test)        | +21.36   | Target : 원논문 9.1%   |
+
 
 2. Log Regression + Ridge
     - Train 
@@ -175,6 +182,12 @@ EDA 결과를 기반으로 다음 전략을 적용:
     - Test 
 
 3. LightGBM
-    - Train (Batch 1 CV) : MAPE 13.6
-    - Valid (Batch 1 Hold-out) : MAPE 8.94
-    - Test (Batch 2) : 27.6529
+   
+| 구분                       | MAPE (%) | 비고                  |
+| ------------------------ | -------- | ------------------- |
+| Train (Batch 1 CV)       | 13.60    |                     |
+| Valid (Batch 1 Hold-out) | 8.94     |                     |
+| Test (Batch 2)           | 27.65    |                     |
+| Gap (Train-Valid)        | -4.66    | 과적합 없음              |
+| Gap (Valid-Test)         | +18.71   | (+) : 배치간 일반화 저하 의심 |
+| Gap (Target-Test)        | +18.55   | Target : 원논문 9.1%   |
